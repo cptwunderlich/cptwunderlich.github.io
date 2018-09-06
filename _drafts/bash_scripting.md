@@ -1,3 +1,12 @@
+---
+layout: post
+title: A Unit Test Framework in Bash
+tags:
+  - bash
+  - programming
+#cover_url: https://s2.banana.moe/unsplash_colle/romain-vignes-53940.jpg
+---
+
 # bash scripting a unit testing framework
 
 ## Introduction
