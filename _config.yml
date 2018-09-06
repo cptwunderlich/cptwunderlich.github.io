@@ -1,5 +1,16 @@
 title: Ben's Blog
+author: Benjamin Maurer
+email: cptwunderlich@gmail.com
+lang: en
+description: This description is work in progress.
 
 # social media
 github_username: cptwunderlich
 twitter_username: cptwunderlich
+
+# Build settings
+markdown: kramdown
+#theme: jekyll-theme-kagami
+exclude:
+  - Gemfile
+  - Gemfile.lock
