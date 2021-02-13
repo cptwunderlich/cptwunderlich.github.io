@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<!-- 
+    Copyright (c) Benjamin Maurer 2021
+    Twitter: @cptwunderlich
+    Github: https://github.com/cptwunderlich
+-->
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Antisemitische Straftaten in Deutschland 2020</title>
+
+    <style>
+        .map {
+            width: 80%;
+        }
+
+        .chart {
+            width: 80%;
+            height: 500px;
+        }
+    </style>
+  </head>
+
+  <body style="background-color: #F8F8F8;">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    
+    <header style="text-align: center;">
+        <h1>Antisemitische Straftaten in Deutschland 2020</h1>
+    </header>
+
+    <section>
+        <article style="margin-left: 6rem; margin-bottom: 4rem;">
+            <section style="margin-bottom: 4rem;">
+                <p>
+                    <span style="background-color: #FFD300;">Achtung: Ein moderner Webbrowser wird benötigt! Z.B. Internet Explorer wird <b>nicht</b> unterstützt!</span>
+                </p>
+
+                <p>F&uuml;r die Richtigkeit der Daten wird keine Haftung &uuml;bernommen!</p>
+
+                <p>Quelle sind Daten veröffentlicht von <a href="https://www.petrapau.de/19_bundestag/dok/down/2020_zf_antisemitische_straftaten.pdf">MdB Petra Pau.</a></p>
+
+                <p>Erstellt von <a href="https://twitter.com/cptwunderlich">Benjamin Maurer</a>. <br/>
+                Ich hab &uuml;brigens keinen Google API Key, also wenn die Karte unten nicht l&auml;dt, haben sie mir vermutlich den Hahn abgedreht :))</p>
+            </section>
+
+            <section>
+                <header>
+                    <h4>Gesamtzahl der gemeldeten Antisemitischen Straftaten, inklusive nicht zugeordneter Nachmeldungen bis 31.12.2020.</h4>
+                </header>
+
+                <div id="pie_totals_chart" class="chart"></div>
+            </section>
+        
+            <section>
+                <header>
+                    <h4>Nur zugeordnete Straftaten, d.h. ohne Nachmeldungen.</h4>
+                </header>
+
+                <div id="pie_totals_assessed_chart" class="chart"></div>
+            </section>
+
+            <section>
+                <header>
+                    <h4>Nur Gewaltstraftaten. Hierzu wurden 21 Verletzte (29 mit Nachmeldungen) gemeldet.</h4>
+                </header>
+
+                <div id="pie_violence_chart" class="chart"></div>
+            </section>
+
+            <section>
+                <header>
+                    <h4>Aufschlüsselung aller Straftaten nach Bundesland.</h4>
+                </header>
+
+                <div id="map_chart" class="map"></div>
+            </section>
+        </article>
+    </section>
+    
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages':['corechart', 'geochart'],
+        });
+        google.charts.setOnLoadCallback(drawAll);
+
+        function drawAll() {
+            drawTotals();
+            drawAssessed();
+            drawViolent();
+            drawMap();
+        };
+
+        const red = '#CD2800';
+        const green = '#109618';
+        const violet = '#990099';
+        const yellow = '#ff9900';
+        const blue = '#3366cc';
+        const teal = '#0099c6';
+
+        function drawMap() {
+            const statesSlice = states.map(xs => xs.slice(0, 3));
+            const options = {
+                backgroundColor: '#F8F8F8',
+                region: "DE",
+                resolution: "provinces"
+            };
+            const data = google.visualization.arrayToDataTable(statesSlice);
+
+            let geochart = new google.visualization.GeoChart(document.getElementById('map_chart'));
+            geochart.draw(data, options);
+        }
+
+        function drawTotals() {
+            // Totals
+            const totalsData = google.visualization.arrayToDataTable(totals);
+            const options = {
+                title: 'Antisemitische Straftaten 2020 Gesamt (inkl. Nachmeldungen)',
+                backgroundColor: '#F8F8F8',
+                slices: [ { color: red }, { color: green }, { color: violet },
+                    { color: yellow }, { color: blue }, { color: teal } ]
+            };
+            let totalsChart = new google.visualization.PieChart(document.getElementById('pie_totals_chart'));
+            totalsChart.draw(totalsData, options);
+        }
+
+        function drawAssessed() {
+            // No additions
+            const noAdd = totals.slice(0, totals.length-1);
+            const options = {
+                title: 'Antisemitische Straftaten 2020 Gesamt',
+                backgroundColor: '#F8F8F8',
+                slices: [ { color: red }, { color: green }, { color: violet },
+                    { color: yellow }, { color: blue } ]
+            };
+            const noAddData = google.visualization.arrayToDataTable(noAdd);
+            let noAddChart = new google.visualization.PieChart(document.getElementById('pie_totals_assessed_chart'));
+            noAddChart.draw(noAddData, options);
+        }
+
+        function drawViolent() {
+            // Violent felonies
+            const violenceData = google.visualization.arrayToDataTable(violence);
+            const options = {
+                title: 'Antisemitische Gewaltstraftaten 2020',
+                backgroundColor: '#F8F8F8',
+                slices: [ { color: red }, { color: violet },
+                    { color: yellow }, { color: blue } ]
+            };
+            let violenceChart = new google.visualization.PieChart(document.getElementById('pie_violence_chart'));
+            violenceChart.draw(violenceData, options);
+        }
+
+        const totals = [
+            ['PMK', 'Anzahl'],
+            ['Rechts', 1247],
+            ['Links', 9],
+            ['Ausländische Ideologie', 18],
+            ['Religiöse Ideologie', 20],
+            ['Nicht zugeordnet', 39],
+            ['Nachgemeldet (nicht zugeordnet)', 942]
+        ];
+
+        const violence = [
+            ['PMK', 'Anzahl'],
+            ['Rechts', 27],
+            ['Links', 0],
+            ['Ausländische Ideologie', 1],
+            ['Religiöse Ideologie', 1],
+            ['Nicht zugeordnet', 3]
+        ];
+
+        const states = [
+            ['Bundesland', 'Straftaten Gesamt', 'Rechts', 'Links', 'Ausländische Ideologie', 'Religiöse Ideologie', 'Nicht zugeordnet'],
+            ['DE-BB', 100, 95, 0, 2, 1, 2],
+            ['DE-BE', 256, 238, 3, 6, 3, 6],
+            ['DE-BW', 74, 67, 0, 0, 3, 4], 
+            ['DE-BY', 209, 197, 1, 3, 1, 7], 
+            ['DE-HB', 18, 17, 0, 0, 1, 0], 
+            ['DE-HE', 51, 50, 0, 0, 1, 0], 
+            ['DE-HH', 25, 20, 0, 0, 2, 3], 
+            ['DE-MV', 57, 48, 0, 0, 5, 4], 
+            ['DE-NI', 127, 120, 0, 0, 5, 2], 
+            ['DE-NW', 127, 118, 4, 3, 0, 2], 
+            ['DE-RP', 44, 40, 0, 0, 0, 4], 
+            ['DE-SH', 27, 25, 0, 2, 0, 0], 
+            ['DE-SL', 11, 10, 0, 0, 0, 1], 
+            ['DE-SN', 107, 98, 0, 2, 2, 5], 
+            ['DE-ST', 55, 55, 0, 0, 0, 0],
+            ['DE-TH', 50, 49, 1, 0, 0, 0]
+        ];
+    </script>
+  </body>
+</html>
