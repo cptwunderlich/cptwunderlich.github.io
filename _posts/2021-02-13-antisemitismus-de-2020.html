@@ -1,3 +1,11 @@
+---
+layout: post
+title: (GER) Antisemitische Straftaten in Deutschland 2020
+tags:
+  - antisemitism
+  - german
+---
+
 <!DOCTYPE html>
 
 <!-- 
@@ -15,72 +23,58 @@
     <title>Antisemitische Straftaten in Deutschland 2020</title>
 
     <style>
-        .map {
-            width: 80%;
-        }
-
         .chart {
-            width: 80%;
-            height: 500px;
+            height: 350px;
         }
     </style>
   </head>
 
-  <body style="background-color: #F8F8F8;">
+  <body>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     
-    <header style="text-align: center;">
-        <h1>Antisemitische Straftaten in Deutschland 2020</h1>
-    </header>
+    <h2>Worum es geht</h2>
 
-    <section>
-        <article style="margin-left: 6rem; margin-bottom: 4rem;">
-            <section style="margin-bottom: 4rem;">
-                <p>
-                    <span style="background-color: #FFD300;">Achtung: Ein moderner Webbrowser wird benötigt! Z.B. Internet Explorer wird <b>nicht</b> unterstützt!</span>
-                </p>
+    <p>Nachdem jemand auf Twitter einen "Der Spiegel" link gepostet hatte,
+    mit wirklich schlechten Datenvisualisierungen zu antisemtischen Straftaten in Deutschland,
+    dachte ich mir - das geht doch besser.</p>
+    
+    <p>Also hier - hoffentlich - lesbarere Tortendiagramme, in denen auch alle Kategorien unterschieden werden, sowie eine Aufschlüsselung nach Bundesländern.</p>
 
-                <p>F&uuml;r die Richtigkeit der Daten wird keine Haftung &uuml;bernommen!</p>
+    <p>Sollte jemand so einen Datensatz f&uuml;r &Ouml;sterreich kennen, lasst es mich bitte wissen!</p>
 
-                <p>Quelle sind Daten veröffentlicht von <a href="https://www.petrapau.de/19_bundestag/dok/down/2020_zf_antisemitische_straftaten.pdf">MdB Petra Pau.</a></p>
+    <p>
+        <span style="background-color: #FFD300;">Achtung: Ein moderner Webbrowser wird benötigt! Z.B. Internet Explorer wird <b>nicht</b> unterstützt!</span>
+    </p>
 
-                <p>Erstellt von <a href="https://twitter.com/cptwunderlich">Benjamin Maurer</a>. <br/>
-                Ich hab &uuml;brigens keinen Google API Key, also wenn die Karte unten nicht l&auml;dt, haben sie mir vermutlich den Hahn abgedreht :))</p>
-            </section>
+    <p>F&uuml;r die Richtigkeit der Daten wird keine Haftung &uuml;bernommen!</p>
 
-            <section>
-                <header>
-                    <h4>Gesamtzahl der gemeldeten Antisemitischen Straftaten, inklusive nicht zugeordneter Nachmeldungen bis 31.12.2020.</h4>
-                </header>
+    <p>Quelle sind Daten veröffentlicht von <a href="https://www.petrapau.de/19_bundestag/dok/down/2020_zf_antisemitische_straftaten.pdf">MdB Petra Pau.</a></p>
 
-                <div id="pie_totals_chart" class="chart"></div>
-            </section>
+    <p>Ich hab &uuml;brigens keinen Google API Key, also wenn die Karte unten nicht l&auml;dt, haben sie mir vermutlich den Hahn abgedreht :))</p>
+
+    <h3>Gesamt</h3>
+
+    <p>Gesamtzahl der gemeldeten Antisemitischen Straftaten, inklusive nicht zugeordneter Nachmeldungen bis 31.12.2020.</p>
+
+    <div id="pie_totals_chart" class="chart"></div>
         
-            <section>
-                <header>
-                    <h4>Nur zugeordnete Straftaten, d.h. ohne Nachmeldungen.</h4>
-                </header>
+    <h3>Nur Zugeordnete</h3>
 
-                <div id="pie_totals_assessed_chart" class="chart"></div>
-            </section>
+    <p>Nur zugeordnete Straftaten, d.h. ohne Nachmeldungen.</p>
 
-            <section>
-                <header>
-                    <h4>Nur Gewaltstraftaten. Hierzu wurden 21 Verletzte (29 mit Nachmeldungen) gemeldet.</h4>
-                </header>
+    <div id="pie_totals_assessed_chart" class="chart"></div>
 
-                <div id="pie_violence_chart" class="chart"></div>
-            </section>
+    <h3>Nur Gewaltstraftaten</h3>
 
-            <section>
-                <header>
-                    <h4>Aufschlüsselung aller Straftaten nach Bundesland.</h4>
-                </header>
+    <p>Hierzu wurden 21 Verletzte (29 mit Nachmeldungen) gemeldet.</p>
 
-                <div id="map_chart" class="map"></div>
-            </section>
-        </article>
-    </section>
+    <div id="pie_violence_chart" class="chart"></div>
+
+    <h3>Nach Bundesland</h3>
+
+    <p>Aufschlüsselung aller Straftaten nach Bundesland.</p>
+
+    <div id="map_chart" class="map"></div>
     
     <script type="text/javascript">
         google.charts.load('current', {
