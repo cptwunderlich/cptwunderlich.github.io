@@ -73,7 +73,7 @@ Check the latest release notes to see which LLVM versions are supported.
 Now, I know that the "true Scotsmen" use emacs, or _maybe_ vi, but despite having programmed for many years, I never gotten over that initial learning bump. That time investment just doesn't seem justifiable to me. I prefer an IDE or at least a rich code editor.
 
 VS Code is a popular and robust choice for this, so that's what I'm using for Haskell.
-Install VS Code, e.g., via the Ubuntu store, or download it from [here](https://code.visualstudio.com/download.
+Install VS Code, e.g., via the Ubuntu store, or download it from [here](https://code.visualstudio.com/download).
 
 There are plenty of infos out there on how to install and configure VS Code, so I'll stick to the Haskell specifics.
 You'll only need to install one extension:
