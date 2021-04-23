@@ -1,0 +1,190 @@
+---
+layout: post
+title: SSA transformation for GHC's native code generator
+tags:
+  - Haskell
+  - GHC
+  - compilers
+  - programming
+---
+
+# Improving the Graph Coloring Register Allocator
+
+For my first big project on GHC, I wanted to try and improve the Graph Coloring Register allocator in NCG (GHC's Native Code Generator), aka `-fregs-graph`.
+
+When code generators emit instructions, they usually use an unlimited number of _virtual registers_ (vregs) and map those to _physical registers_ (or real regs),
+possibly after changing the code around with optimizations.
+This register allocation step is generally one of the last ones and extremely important for performance.
+Registers are a scarce resource and memory access is orders of magnitude slower.
+
+Two of the dominant paradigmes for register allocation are _Graph Coloring_[^1] based and _Linear Scan_[^2] register allocators.
+These have been around since the eighties, respectively nineties, but are still highly relevant and in wide use.
+Generally speaking, graph coloring based approaches are supposed to yield better quality code, but taking more time,
+whereas linear scan is faster, at a cost of quality.
+GHC currently only uses a (very good) linear scan based allocator, since `-fregs-graph` has been suffering from [bad performance since ca. 2013](https://gitlab.haskell.org/ghc/ghc/-/issues/7679).
+
+So looking at [AndreasK's improvement ideas](https://gitlab.haskell.org/ghc/ghc/-/issues/16243), I chose to try _live range splitting_.
+
+# Live Ranges and Graph Coloring
+
+I'm borrowing the definition of _live range_ from Cooper & Torczon's "Engineering a Compiler", chapter 13:
+
+> A single live range consists of a set of definitions and uses that are related to each other because their values flow together.
+> That is, a live range contains a set of definitions and a set of uses.
+
+Since "range" sounds so "linear", I somewhat prefer the term _webs_ over _live ranges_, as these are webs of intersecting def-use chains.
+
+Basically, we want to assign each live range one physical register, but we generally have fewer real registers than live ranges.
+We can assign two live ranges to the same physical register, if they never "overlap".
+This "overlapping" is called _interference_ and two LRs _interfere_ if they are ever live at the same point in the program.
+We construct an undirected graph, the _interference graph_, where each vertex is a live range and each edge an interference.
+Calculating precise liveness information and constructing the interference graph isn't cheap, by the way.
+
+How does this help assigning registers? Using the interference graph, we can formulate a [Graph Coloring](https://en.wikipedia.org/wiki/Graph_coloring) problem,
+i.e., we want to color each vertex in such a way, that two connected vertices have different colors.
+Physical registers are our colors and since we have limited registers, we are looking for a _k-coloring_, where _k_ is the number of registers.
+
+Not all programs will be k-colorable, so we may have to _spill_, i.e., put an LR in memory, by performing a _store_ after each definition
+and a _load_ before each use. Then we can remove that LR from the interference graph and try again[^3].
+
+![Phases of a Chaitin-Briggs Allocator][/assets/posts/ssa-ncg/coloring.png]
+
+I've ignored many things here:
+_Coalescing_ is the process of merging non-interfering, copy related live ranges together.
+I will talk later about _renumbering_.
+
+## Live Range Splitting
+
+In the ticket linked above, AndreasK has observed, that live ranges are spilled, even though they may be fit into _liveness holes_ and a coloring could be found, by splitting the LR.
+What does this mean? Let's look at the following pseudo-code:
+
+    x <- 1 # def x
+    y <- 1 # def y
+    loop {
+        y <- y + 1  # use y
+    }
+    
+    loop {
+        # use x
+    }
+
+Imagine for a moment this code makes sense (or would you rather stare at real assembly?).
+If we had only two registers and our heuristic decides to _spill_ either x or y, we'd have an additional _load_ and a _store_ in each loop.
+At this point you may say "hold up, there are no loops in Haskell", or "Why not put the load before the loop and the store after it?".
+Since we're working on machine instructions at this stage in the compiler, loops do exist - in the form of jumps between blocks.
+Choosing which LRs to spill and spill code placement are subjects in their own right. Let's just say that this example is simplified
+and that `-fregs-graph` places the spill code right around the instructions, later cleaning up unnecessary ones.
+
+I jumped on this and tried to implement _Passive Live Range Splitting_, by [Cooper and Simpson](https://doi.org/10.1007/BFb0026430).
+This algorithm is supposed to figure out, that we can split x like this:
+
+    x <- 1 # def x
+    y <- 1 # def y
+    STORE x
+    loop {
+        y <- y + 1  # use y
+    }
+    
+    LOAD x
+    
+    loop {
+        # use x
+    }
+
+The paper looked simple and like a great solution, so [I went ahead with it.](https://gitlab.haskell.org/ghc/ghc/-/issues/19274)
+
+## Jumping the Gun
+
+I wasn't familiar with the code base (or the algorithm) and did some learning by doing.
+I'll give you the quick run down of my revelation:
+
+In my description of live ranges, I made it sound like we are assigning registers to live ranges.
+That isn't quite correct. There is no explicit modelling of live ranges ("webs") in GHC (and probably in most compilers?).
+We are operating on vregs and **those are mapped** to physical registers.
+
+Remember that "renumbering" step in the diagram earlier? This is actually about _live range discovery_.
+This whole coloring process is repeated. Like I noted before, _spilling_ technically creates tiny live ranges
+and `-fregs-graph` renames them on-the-fly.
+To split live ranges, inserting stores and loads is not enough, you have to rename ("renumber") the vregs in the instructions,
+to reflect the new live ranges!
+But `-fregs-graph` doesn't have a renumbering phase.
+While analyzing [this simple reproducing example program](https://gitlab.haskell.org/ghc/ghc/-/issues/8048), it dawned on me.
+I saw something similar to this in assembly:
+
+    {
+      def x
+      use x
+      def x
+      use x
+    }
+    ...
+    {
+      def x
+      use x
+    }
+
+There were no branches with different definitions of _x_. In fact, _x_ was redefined in the same basic block,
+redefined and used in a later block.
+Those are disjoint live ranges, but by having the same vreg name, they are constrained to be assigned to the same physical register!
+We don't need live range splitting, we need live range discovery!
+I falsely assumed that vreg = live range.[^4]
+
+## Things going Sideways
+
+I briefly and desperately tried to create some makeshift renumbering for my split LRs, but it was no use.
+Figuring out where the new live ranges are and how to name them is **hard**, even though you technically only have to
+look "before" your inserted store and "after" the inserted load. But in the presence of control flow (branches and loops), it's not that simple:
+
+    def x
+    STORE x
+    if (..) {
+      use y
+    } else {
+      LOAD x'
+    }
+    use x
+
+Which x should we use after the branches join? This code is wrong and we either need to place a `LOAD x'` into the if-block,
+or possibly a copy `x' -> x` in the else branch.
+
+To do that, I'd need to build a [reaching definition analysis](https://en.wikipedia.org/wiki/Reaching_definition) anyway and then some.
+
+# Discovering Live Ranges
+
+So I decided to address the problem at hand by implementing a "renumbering" phase.
+The "classic" way of doing this, is by performing data-flow analysis to build explicit def-use chains.
+Basically, we want to find all vreg definitions, create a list for each of them and add all the positions in the program
+where this definition was used.
+The data-flow analysis to get the reaching definitions is generally performed by a fixed-point algorithm.
+Straight line code is simple, but for loops, you have to iterate until your data-flow facts no longer change (i.e., the fixed-point is reached).
+This due to the fact, that information from the loop body can flow back to the loop head.
+
+Once you have your def-use chains, i.e., _n_ lists for each LR, you'll want to perform pairwise intersection tests for all lists (with the same vreg).
+There are probably ways to optimize this, but this takes a lot of time and space!
+
+In fact, it seems like this is not the way to do it anymore. E.g., looking at "Engineering a Compiler", after giving an overview of the problem it says:
+
+> Conversion of the code into ssa form simplifies the construction of live ranges; thus, we will assume that the allocator operates on ssa form.
+
+Even Briggs in 1994 wrote, that their compiler uses SSA instead of the "classical" way that Chaitin used.
+
+# SSA - What & Why
+
+What is SSA and how does it help us?
+An intermediate representation is in Singe Static Assignment form, if it conforms to a simple property:
+
+> Each name is only defined once, respectively, each definition introduces a new name
+
+Generally, an intermediate 
+
+[^1]: [Chaitin81](https://doi.org/10.1016/0096-0551(81)90048-5), improved by [Briggs94](https://doi.org/10.1145/177492.177575)
+[^2]: [Poletto99](https://dl.acm.org/doi/10.1145/330249.330250). Note that this algorithm is generally extended in such a way, that it isn't really _linear_.
+[^3]: Technically, this breaks the LR up into many tiny LRs, which still can cause interferences.
+[^4]: What do we learn? Always test your assumptions, i.e., check yourself before you wreck yourself!
+
+*[GHC]: Glasgow Haskell Compiler
+*[LR]: Live Range
+*[LRs]: Live Ranges
+*[NCG]: GHC's Native Code Generator
+*[SSA]: Static Single Assignment
+*[vreg]: Virtual Register
