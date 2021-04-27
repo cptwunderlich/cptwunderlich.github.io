@@ -1,10 +1,12 @@
 ---
 layout: post
-title: SSA transformation for GHC's native code generator
+title: SSA transformation for GHC's native code generator (Part 1)
 tags:
   - Haskell
   - GHC
   - compilers
+  - ssa
+  - register_allocation
   - programming
 ---
 
@@ -17,9 +19,9 @@ possibly after changing the code around with optimizations.
 This register allocation step is generally one of the last ones and extremely important for performance.
 Registers are a scarce resource and memory access is orders of magnitude slower.
 
-Two of the dominant paradigmes for register allocation are _Graph Coloring_[^1] based and _Linear Scan_[^2] register allocators.
+Two of the dominant paradigms for register allocation are _Graph Coloring_[^1] based and _Linear Scan_[^2] register allocators.
 These have been around since the eighties, respectively nineties, but are still highly relevant and in wide use.
-Generally speaking, graph coloring based approaches are supposed to yield better quality code, but taking more time,
+Generally speaking, graph coloring based approaches are supposed to yield better quality code, but take more time and memory,
 whereas linear scan is faster, at a cost of quality.
 GHC currently only uses a (very good) linear scan based allocator, since `-fregs-graph` has been suffering from [bad performance since ca. 2013](https://gitlab.haskell.org/ghc/ghc/-/issues/7679).
 
@@ -47,7 +49,7 @@ Physical registers are our colors and since we have limited registers, we are lo
 Not all programs will be k-colorable, so we may have to _spill_, i.e., put an LR in memory, by performing a _store_ after each definition
 and a _load_ before each use. Then we can remove that LR from the interference graph and try again[^3].
 
-![Phases of a Chaitin-Briggs Allocator][/assets/posts/ssa-ncg/coloring.png]
+![Phases of a Chaitin-Briggs Allocator](/assets/posts/ssa-ncg/coloring.png)
 
 I've ignored many things here:
 _Coalescing_ is the process of merging non-interfering, copy related live ranges together.
@@ -126,8 +128,8 @@ I saw something similar to this in assembly:
 There were no branches with different definitions of _x_. In fact, _x_ was redefined in the same basic block,
 redefined and used in a later block.
 Those are disjoint live ranges, but by having the same vreg name, they are constrained to be assigned to the same physical register!
-We don't need live range splitting, we need live range discovery!
-I falsely assumed that vreg = live range.[^4]
+We don't need live range splitting, we need live range discovery![^4]
+I falsely assumed that vreg = live range.[^5]
 
 ## Things going Sideways
 
@@ -152,6 +154,7 @@ To do that, I'd need to build a [reaching definition analysis](https://en.wikipe
 # Discovering Live Ranges
 
 So I decided to address the problem at hand by implementing a "renumbering" phase.
+
 The "classic" way of doing this, is by performing data-flow analysis to build explicit def-use chains.
 Basically, we want to find all vreg definitions, create a list for each of them and add all the positions in the program
 where this definition was used.
@@ -175,12 +178,95 @@ An intermediate representation is in Singe Static Assignment form, if it conform
 
 > Each name is only defined once, respectively, each definition introduces a new name
 
-Generally, an intermediate 
+This has many nice implications, simplifies data-flow analysis and even enables new optimizations[^6].
+Any use of an SSA-variable `x` is _dominated_ by its definition, i.e., any path from the start of
+the control flow graph of the program to the use has to go execute that definition - and there is only one definition.
+Def-use chains are no longer necessary, each definition has to be within the same basic block,
+or defined by a &phi;-function at the beginning of a block.
+
+What is a &phi;-function (or &phi;-node, "phi-function")?
+Let's say we have a variable `x` that is redefined several times.
+Each time, we update an index to create a new name, i.e., x<sub>0</sub>, x<sub>1</sub>, ...
+What if you have two different definitions of `x` reaching your basic block?
+Which name do you have to choose?
+This is where &phi;-functions come into play. Think of them as magically "selecting"
+the right name, depending on where the control flow came from and defining a new name for
+the selected value: x<sub>2</sub> = &phi;(x<sub>0</sub>, x<sub>1</sub>)
+Semantically, these are considered to be executed as parallel copies, all at once,
+at the beginning of the block, before the first instruction.
+
+Here some code, which is **not** in SSA-form:
+
+    x := 0
+    if (...) {
+        x := x + 1
+    } else {
+        x := x + 2
+    }
+    y := x
+
+...and transformed:
+
+    x_0 := 0
+    if (...) {
+        x_1 := x_0 + 1
+    } else {
+        x_2 := x_0 + 2
+    }
+    x_3 = φ(x_1, x_2)
+    y := x_3
+
+## SSA Destruction and Live Range Discovery
+
+Naturally, we can't leave the code like this. CPU's simply don't have a &phi; instruction,
+we need to get rid of them.
+
+The process of transforming a program in SSA-form out-of-SSA (thus resolving all &phi;-functions)
+is sometimes called _SSA Destruction_.
+There is quite a bit of literature on this and it gets complicated if you want fast and correct
+SSA destruction.
+
+But for our case, things are simpler. For now, all we want is to rename our life ranges,
+so that each vreg represents a single, disjoint live range.
+Sreedhar et al.[^7] noted the distinction between Conventional SSA (CSSA) and
+Transformed SSA (TSSA). A program is in CSSA right after SSA transformation (or after repair)
+and in TSSA once any program transformations have moved, removed or added code.
+The difference is, that the &phi; arguments in CSSA do not _interfere_ - whereas in TSSA they _might_.
+Resolving &phi;-functions with interfering arguments requires the insertion of copies and
+to keep your program fast, you will want to figure out _which ones_ you need and which ones
+you can get rid of.
+For CSSA, you simply gather all names connected by &phi;-functions, using a [union-find (disjoint-set union)](https://en.wikipedia.org/wiki/Disjoint-set_data_structure),
+then assigning one name to each disjoint set.
+Voilà, you're done!
+
+# Further Reading
+
+Cooper & Torczon's "Engineering a Compiler" is one of my favorite textbooks on compilers and
+contains lots of information on register allocation and SSA.
+
+The (unfortunately unpublished) ["SSA Book"](http://ssabook.gforge.inria.fr/latest/book.pdf), by France's INRIA, is a real treasure trove and shouldn't be missed.
+
+For a more exhaustive bibliography, check out [Jeremy Singer's SSA Bibliography](http://www.dcs.gla.ac.uk/~jsinger/ssa.html).
+
+# Conclusion
+
+To summarize, in order to improve GHC's graph coloring register allocator,
+I wanted to implement _passive live range splitting_, but discovered that several disjoint
+live ranges may bear the same vreg name.
+I've described what SSA is and how it may solve the problem.
+
+In the next part, I'll describe how I implemented SSA-transformation in GHC
+and what the results where.
+
+If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
 [^1]: [Chaitin81](https://doi.org/10.1016/0096-0551(81)90048-5), improved by [Briggs94](https://doi.org/10.1145/177492.177575)
 [^2]: [Poletto99](https://dl.acm.org/doi/10.1145/330249.330250). Note that this algorithm is generally extended in such a way, that it isn't really _linear_.
 [^3]: Technically, this breaks the LR up into many tiny LRs, which still can cause interferences.
-[^4]: What do we learn? Always test your assumptions, i.e., check yourself before you wreck yourself!
+[^4]: Confusingly, the literature seems to use _live range splitting_ for both things, I prefer _live range discovery_ to simply rename disjoint live ranges.
+[^5]: What do we learn? Always test your assumptions, i.e., check yourself before you wreck yourself!
+[^6]: E.g., Sparse Conditional Constant Propagation
+[^7]: [SreedharJGS99 - "Translating out of static single assignment form."](https://doi.org/10.1007/3-540-48294-6_13)
 
 *[GHC]: Glasgow Haskell Compiler
 *[LR]: Live Range
