@@ -174,7 +174,7 @@ Even Briggs in 1994 wrote, that their compiler uses SSA instead of the "classica
 # SSA - What & Why
 
 What is SSA and how does it help us?
-An intermediate representation is in Singe Static Assignment form, if it conforms to a simple property:
+An intermediate representation is in Single Static Assignment form, if it conforms to a simple property:
 
 > Each name is only defined once, respectively, each definition introduces a new name
 
