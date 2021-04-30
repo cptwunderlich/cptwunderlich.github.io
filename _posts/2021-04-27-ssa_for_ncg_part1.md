@@ -226,7 +226,7 @@ is sometimes called _SSA Destruction_.
 There is quite a bit of literature on this and it gets complicated if you want fast and correct
 SSA destruction.
 
-But for our case, things are simpler. For now, all we want is to rename our life ranges,
+But for our case, things are simpler. For now, all we want is to rename our live ranges,
 so that each vreg represents a single, disjoint live range.
 Sreedhar et al.[^7] noted the distinction between Conventional SSA (CSSA) and
 Transformed SSA (TSSA). A program is in CSSA right after SSA transformation (or after repair)
@@ -256,7 +256,7 @@ live ranges may bear the same vreg name.
 I've described what SSA is and how it may solve the problem.
 
 In the next part, I'll describe how I implemented SSA-transformation in GHC
-and what the results where.
+and what the results were.
 
 If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
