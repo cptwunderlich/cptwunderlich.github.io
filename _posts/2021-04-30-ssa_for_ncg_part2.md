@@ -143,10 +143,11 @@ There may also be better algorithms around (see "Conclusion").
 The gist is, you need to compute the [dominance frontiers](https://en.wikipedia.org/wiki/Dominator_(graph_theory)) to know where to place &phi;-functions and then you need to start renaming definitions in a depth first pre-order walk over the CFG.
 
 One node _d_ in a directed graph is said to _dominate_ a node _n_, if every path from the start node to _n_ must go through _d_.
-The _dominance frontier_ is the set of nodes, that _d_ _just_ doesn't dominate, i.e., if _d_ dominates an immediate predecessor of _n_, but **not** _n_ itself, it is in the dominance frontier.
-Looking at the graph below, we can see that _b_ dominates both _c_ and _d_ - to reach them, you must go through _b_.
-But _b_ does **not** dominate _e_, only its predecessors. _e_ is in the dominance frontier of _b_
-and a block, where we may have to place a &phi;-node.
+Every node _d_ dominates itself, but _d_ is said to _strictly dominate_ _n_ if _d_ dominates _n_ and _d_ &ne; _n_.
+The _dominance frontier_ is the set of nodes, that _d_ _just_ doesn't dominate, i.e., if _d_ dominates an immediate predecessor of _n_, but **does not** strictly dominate _n_ itself, it is in the dominance frontier.
+
+Looking at the graph below, we can see that _b_ dominates both _c_, _d_ and _e_ - to reach them, you must go through _b_.
+But _c_ and _d_ do **not** dominate _e_ (only themselves). _e_ is in the dominance frontier of _c_ and of _d_ and a block, where we may have to place a &phi;-node.
 Looking at the graph, we can intuitively see that, as two conflicting variable definitions from _c_ and _d_ would reach _e_ and we'd need to reconcile them.
 
 ![A control flow graph](/assets/posts/ssa-ncg/dom-cfg.png)
