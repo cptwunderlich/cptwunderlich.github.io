@@ -181,8 +181,7 @@ An intermediate representation is in Single Static Assignment form, if it confor
 This has many nice implications, simplifies data-flow analysis and even enables new optimizations[^6].
 Any use of an SSA-variable `x` is _dominated_ by its definition, i.e., any path from the start of
 the control flow graph of the program to the use has to go execute that definition - and there is only one definition.
-Def-use chains are no longer necessary, each definition has to be within the same basic block,
-or defined by a &phi;-function at the beginning of a block.
+Def-use chains are no longer necessary, each definition has to come from a straight line of predecessors, be within the same basic block, or defined by a &phi;-function at the beginning of a block or come from 
 
 What is a &phi;-function (or &phi;-node, "phi-function")?
 Let's say we have a variable `x` that is redefined several times.
