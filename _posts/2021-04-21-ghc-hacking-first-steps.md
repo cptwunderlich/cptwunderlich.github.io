@@ -116,8 +116,10 @@ Basically, there are different build "Flavours" with different optimizations or 
 You can find an overview of the flavours [here](https://gitlab.haskell.org/ghc/ghc/-/blob/master/hadrian/doc/flavours.md).
 GHC compilation is done in stages. Confusingly, sometimes you'll see _stage0_ and _stage1_, other times it starts with _stage1_. Anyway, the first stage is the bootstrap compiler, compiled with the GHC on your path. The next stage is compiled with the bootstrap compiler, containing all the latest GHC changes.
 
-Running `./hadrian/build -cj --flavour=Quick` will run the _configure_ step (`-c`), build in parallel (`-j`) and produce a "quick" build (`-O0`).
-Note that you don't need to pass `-c` every time and that you can use `--freeze1` to avoid rebuilding the bootstrap compiler (if you haven't changed anything relevant).
+Before your first compile (and whenever you upgraded your system GHC or the like), run `./boot && ./configure`, which configures the build with all your paths and tool versions.
+
+Running `./hadrian/build -j --flavour=Quick` will build in parallel (`-j`) and produce a "quick" build (`-O0`).
+Note that you can use `--freeze1` to avoid rebuilding the bootstrap compiler (if you haven't changed anything relevant).
 
 Hadrian has a clean command (`hadrian/build clean`), there is also `hadrian/ghci` to load GHC into a GHCi session and you can run the hlint rules with `hadrian/build lint:base` and `hadrian/build lint:compiler`.
 
@@ -146,7 +148,7 @@ For the latter, you might want to create a fork of GHC for your account and add 
 
 Subscribe to the [GHC mailing list](http://www.haskell.org/mailman/listinfo/ghc-devs), to stay informed and get new ideas for projects!
 
-AFAIK, most of the communication happens on IRC, so pop in at [#GHC on freenode](https://kiwiirc.com/nextclient/chat.freenode.net/#ghc) - I have to say, people on their have been very friendly and extremely helpful!
+AFAIK, most of the communication happens on IRC, so pop in at [#GHC on libera.chat](https://kiwiirc.com/nextclient/irc.libera.chat/#ghc) - I have to say, people on their have been very friendly and extremely helpful!
 There is also a [#Haskell-docs](https://kiwiirc.com/nextclient/chat.freenode.net/#Haskell-docs) channel, where you can find support for your fervor to make Haskell documentation _excellent_.
 
 You might also want to check out this Wiki page for [new contributors](https://gitlab.haskell.org/ghc/ghc/-/wikis/contributing#advice).
