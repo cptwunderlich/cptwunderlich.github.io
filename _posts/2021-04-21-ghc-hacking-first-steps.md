@@ -298,4 +298,5 @@ If you spot any mistakes, omissions or want to provide feedback, comments, quest
 I'll try to keep this somewhat up-to-date, but things sometimes move fast.
 
 ??.??.???? - Removed description of Hadrian's `-c` option, bc. I was made aware of problems with it and that calling `./boot && ./configure` explicitly is preferable.
+
 16.07.2021 - Added mention of test suite and mpickerings productivity tip, also nofib-run's `--head` option.
