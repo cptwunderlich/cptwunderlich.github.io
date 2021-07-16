@@ -106,7 +106,6 @@ you'll want to [update all submodules recursively](https://git-scm.com/book/en/v
 ## Build & Test
 
 Many of the things I'm writing here can be found on the nifty cheatsheet [ghc.dev](https://ghc.dev/) - make sure to check it out.
-One thing I would add though: no need to run `./boot && ./configure`, as Hadrian can do that with the `-c` option.
 
 But I'm getting ahead of myself. Let's start with the basics and change into the GHC directory with your favorite terminal emulator (e.g., in VS Code).
 Be aware that building GHC takes quite some computing resources and time, depending on the chosen optimizations.
@@ -116,7 +115,7 @@ Basically, there are different build "Flavours" with different optimizations or 
 You can find an overview of the flavours [here](https://gitlab.haskell.org/ghc/ghc/-/blob/master/hadrian/doc/flavours.md).
 GHC compilation is done in stages. Confusingly, sometimes you'll see _stage0_ and _stage1_, other times it starts with _stage1_. Anyway, the first stage is the bootstrap compiler, compiled with the GHC on your path. The next stage is compiled with the bootstrap compiler, containing all the latest GHC changes.
 
-Before your first compile (and whenever you upgraded your system GHC or the like), run `./boot && ./configure`, which configures the build with all your paths and tool versions.
+Before your first compile (and whenever you upgraded your system GHC, change to a very different branch or the like), run `./boot && ./configure`, which configures the build with all your paths and tool versions.
 
 Running `./hadrian/build -j --flavour=Quick` will build in parallel (`-j`) and produce a "quick" build (`-O0`).
 Note that you can use `--freeze1` to avoid rebuilding the bootstrap compiler (if you haven't changed anything relevant).
@@ -124,6 +123,13 @@ Note that you can use `--freeze1` to avoid rebuilding the bootstrap compiler (if
 Hadrian has a clean command (`hadrian/build clean`), there is also `hadrian/ghci` to load GHC into a GHCi session and you can run the hlint rules with `hadrian/build lint:base` and `hadrian/build lint:compiler`.
 
 After your build has finished, verify it by running `./_build/stage1/bin/ghc --version`.
+
+To run GHC's test suite, just run `./hadrian/build test` and check out testsuite/README.md for more options.
+
+Although you should check out the build Flavours for yourself to find all the useful ones, like "quick" and "perf",
+there is a good [productivity tip from Matthew Pickering](https://mail.haskell.org/pipermail/ghc-devs/2021-May/019915.html), a flavour combination that
+should pass almost the whole test suite, but reduces re-compile times:
+`./hadrian/build --flavour=default+no_profiled_libs+omit_pragmas --freeze1 -j`
 
 ### Read
 
@@ -274,6 +280,11 @@ Last but not least, nofib may sometimes break with the latest changes from GHC h
 Currently I can't use the latest GHC release (9.0.1) for nofib-run, so I have to use 8.10.x.
 Sometimes packages may become incompatible, but there is a hackage overlay with pre-releases, called [head.hackage](https://gitlab.haskell.org/ghc/head.hackage).
 
+Nofib-run now has an option to use head.hackage directly.
+Update the packages first with `cabal v2-update --project-file=nofib.head head.hackage.ghc.haskell.org`,
+then simply pass the `--head` flag to `nofib-run`.
+Also see nofib/shake/README.mkd.
+
 ## Conclusion
 
 I hope this provided a gentle introduction to GHC development for you all and that some of you will contribute to this great project.
@@ -281,3 +292,9 @@ Maybe this saves someone time that I spent scratching my head.
 
 If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
+## Updates
+
+I'll try to keep this somewhat up-to-date, but things sometimes move fast.
+
+??.??.???? - Removed description of Hadrian's `-c` option, bc. I was made aware of problems with it and that calling `./boot && ./configure` explicitly is preferable.
+16.07.2021 - Added mention of test suite and mpickerings productivity tip, also nofib-run's `--head` option.
