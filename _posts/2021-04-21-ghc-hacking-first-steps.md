@@ -124,12 +124,13 @@ Hadrian has a clean command (`hadrian/build clean`), there is also `hadrian/ghci
 
 After your build has finished, verify it by running `./_build/stage1/bin/ghc --version`.
 
-To run GHC's test suite, just run `./hadrian/build test` and check out testsuite/README.md for more options.
+To run GHC's test suite, just run `./hadrian/build test` (but you might want to pass a flavour and other options) and check out testsuite/README.md for more options.
 
 Although you should check out the build Flavours for yourself to find all the useful ones, like "quick" and "perf",
 there is a good [productivity tip from Matthew Pickering](https://mail.haskell.org/pipermail/ghc-devs/2021-May/019915.html), a flavour combination that
 should pass almost the whole test suite, but reduces re-compile times:
 `./hadrian/build --flavour=default+no_profiled_libs+omit_pragmas --freeze1 -j`
+(adding `test` to that incantation if you want to run the test suite)
 
 ### Read
 
