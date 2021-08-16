@@ -214,11 +214,11 @@ The `-hy` option will give you a heap profile broken down by type and `-hc` brea
 
 Here the type example:
 
-    ghc -O2 -dcmm-lint -dasm-lint -ddump-asm-ssa Main.hs +RTS -hm"GHC.CmmToAsm.SSA" -hy -l-au
+    ghc -O2 Main.hs +RTS -hm"GHC.CmmToAsm.SSA" -hy -l-au
 
 And cost-centers:
 
-    ghc -O2 -dcmm-lint -dasm-lint -ddump-asm-ssa Main.hs +RTS -hm"GHC.CmmToAsm.SSA" -hc -l-au
+    ghc -O2 Main.hs +RTS -hm"GHC.CmmToAsm.SSA" -hc -l-au
 
 Using eventlog2html to visualize it:
 
