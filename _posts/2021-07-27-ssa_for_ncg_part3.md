@@ -220,6 +220,8 @@ and [this is a new MR](https://gitlab.haskell.org/ghc/ghc/-/merge_requests/6170)
 
 If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
+![readers](https://visitor-badge.glitch.me/badge?page_id=cptwunderlich.ssa4ncg3-2021)
+
 [^1]: [Braun et al. - "Simple and Efficient Construction of Static Single Assignment Form"](https://link.springer.com/chapter/10.1007%2F978-3-642-37051-9_6)
 [^2]: [SPIRV-Tools SSA rewrite pass](https://github.com/KhronosGroup/SPIRV-Tools/blob/e0937d7fd1dbcb306c93d0806954a0dac08f48b9/source/opt/ssa_rewrite_pass.cpp) seems to only use "sealed", but IIRC that differed from the paper's definition.
 

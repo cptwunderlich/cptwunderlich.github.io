@@ -276,6 +276,8 @@ So my next big project will be a new graph coloring register allocator on SSA-fo
 
 If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
+![readers](https://visitor-badge.glitch.me/badge?page_id=cptwunderlich.ssa4ncg2-2021)
+
 [^1]: I recommend [Takenobu's GHC Reading Guide](https://github.com/takenobu-hs/haskell-ghc-reading-guide) for an overview.
 [^2]: Well, there are still a few meta-instructions, like SPILL and LOAD, but all-in-all it's pretty close to assembly.
 [^3]: I think one could promote them to a distinct class of SSA variables and store a mapping to the original register.

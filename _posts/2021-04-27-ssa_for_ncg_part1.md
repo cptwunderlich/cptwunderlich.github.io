@@ -259,6 +259,8 @@ and what the results were.
 
 If you spot any mistakes, omissions or want to provide feedback, comments, questions - you can reach me on [Twitter](https://twitter.com/cptwunderlich), or via mail with my username at gmail.
 
+![readers](https://visitor-badge.glitch.me/badge?page_id=cptwunderlich.ssa4ncg1-2021)
+
 [^1]: [Chaitin81](https://doi.org/10.1016/0096-0551(81)90048-5), improved by [Briggs94](https://doi.org/10.1145/177492.177575)
 [^2]: [Poletto99](https://dl.acm.org/doi/10.1145/330249.330250). Note that this algorithm is generally extended in such a way, that it isn't really _linear_.
 [^3]: Technically, this breaks the LR up into many tiny LRs, which still can cause interferences.
