@@ -1,0 +1,11 @@
+digraph {
+    node [shape=box]
+    A [label="0: int x := 1\n1: int y := 0\n\n2: if z > 0", xlabel=B1]
+    B [label="3: use(x)", xlabel=B2]
+    C [label="4: use(y)", xlabel=B3]
+    D [label="5: use(x)", xlabel=B4]
+    A -> B, C
+    B -> D
+    C -> D
+}
+
