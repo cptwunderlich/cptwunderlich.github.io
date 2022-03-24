@@ -188,6 +188,7 @@ This [reference of debug flags](https://downloads.haskell.org/~ghc/9.0.1/docs/ht
 You can dump intermediate steps along the way to figure out, where things went awry.
 
 In lieu of a proper debugger, GHC.Driver.Ppr with it's `pprTrace` and friends - where `ppr` stands for "pretty print". GHC uses the `SDoc` type for string representations of data structures. I.e., this is the good old "printf-debugging".
+The compiler needs to be built with `-DDEBUG`, e.g., the [devel1 flavour](https://gitlab.haskell.org/ghc/ghc/blob/master/hadrian/doc/flavours.md) and you can get additional output using the flag `-dppr-debug`.
 
 When you have to debug a crashing output binary, you'll also want to use GDB and possibly the reverse debugger [rr](https://rr-project.org/).
 
@@ -300,6 +301,8 @@ I'll try to keep this somewhat up-to-date, but things sometimes move fast.
 ??.??.???? - Removed description of Hadrian's `-c` option, bc. I was made aware of problems with it and that calling `./boot && ./configure` explicitly is preferable.
 
 16.07.2021 - Added mention of test suite and mpickerings productivity tip, also nofib-run's `--head` option.
+
+24.03.2022 - Mentioned that you need `-DDEBUG` to see `pprTrace` messages.
 
 ![readers](https://visitor-badge.glitch.me/badge?page_id=cptwunderlich.hackingonghc2021)
 
