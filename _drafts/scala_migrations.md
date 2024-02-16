@@ -51,7 +51,7 @@ Scalafix allows you to use predefined rules (both internal and community release
 
 Rules can be consumed in different forms by scalafix. You can publish them as an artifact, like any other scala code. Or you can consume their source code and let scalafix compile them on the fly. Sources can be read via the `file:`, `http:` and `github:` protocols. The [tutorial](https://scalacenter.github.io/scalafix/docs/developers/tutorial.html#run-the-rule-from-source-code) contains some more information on this.
 
-I chose to add them to the existing libraries project, as a sub-module. The migration is split up into several rules, each one taking care of a specific change. Rules are published to our Nexus repository as compiled artifacts.
+I chose to add them to the existing libraries project, as a sub-module. The migration is split up into several rules, each one taking care of a specific change. Rules are published to our Nexus repository as a compiled artifact.
 
 Using the `github:` or `http:` schemes, I would have had to publish the rules on the public internet, e.g., in a gist on my personal GitHub account, because those do not work with authentication. That's a big no-no.
 
@@ -163,7 +163,7 @@ Two important concepts to understand, is the [Syntax Tree](https://scalameta.org
 The former one is a tree representation of your program, which you will write matchers against.
 Tokens are the building blocks of your program and represent keywords, identifiers and even indentation etc. We typically want to modify these.
 
-The [scalafix guide ](https://scalacenter.github.io/scalafix/docs/developers/setup.html) describes how to write rules and there are many existing rules you can learn from. So I will focus on the big picture and some things I found difficult.
+The [scalafix guide ](https://scalacenter.github.io/scalafix/docs/developers/setup.html) describes how to write rules and there are many existing rules you can learn from.
 
 ### Syntactic vs. Semantic Rules
 
@@ -171,7 +171,7 @@ First, we need to decide whether we want to write a _syntactic_ or _semantic_ ru
 
 A _syntactic_ only needs a parsed program, i.e., the program structure and won't need a semanticDB with resolved types and symbols. I'd recommend to use syntactic rules whenever possible. They are faster and they work on programs with (semantic) compilation errors. For example, you update some dependencies and multiple changes are necessary to get the program to compile again. I might be biased, because I had huge problems with semantic rules in this regard. You might also get a `stale semanticDB` error with semantic rules, if the code was modified but not compiled/a new semanticDB generated in the meantime.
 
-Syntactic rules are, however, less _powerful_. For example, if your code contains unqualified uses of two types with the same name, e.g., `com.someframework.Url` and `org.other.Url`, your rule might only see an identifier `Url`. It's up to you to make sure you are rewriting the correct ones. This might be easy, if you know your codebase and you can ascertain that such situations won't happen, simply by grepping through your code base.
+Syntactic rules are, however, less _powerful_. For example, if your code contains unqualified uses of two types with the same name, e.g., `com.someframework.Url` and `org.other.Url`, your rule might only see an identifier `Url`. It's up to you to make sure you are rewriting the correct ones. This might be easy, if you know your codebase and you can ascertain that such situations won't come up, simply by grepping through your code base.
 
 _Semantic_ rules, on the other hand, have access to the resolved types and symbols. So you can, e.g., use scalafix' [SymbolMatcher](https://scalacenter.github.io/scalafix/docs/developers/symbol-matcher.html) to look for occurrences of `com.someframework.Url`.
 Depending on how you run your scalafix rules, you'll need to [set your build to generate semanticDB files](https://scalacenter.github.io/scalafix/docs/users/installation.html#sbt), e.g.,
@@ -187,7 +187,7 @@ I'm typically starting out by building a minimal example of what I want to rewri
 and what I would like it to look like afterwards (the output).
 If you can think of any edge cases, or similar looking code you _don't want to rewrite_, put that into the test as well.
 
-Then paste the code into the [Scalameta AST Explorer](https://scalameta.org/docs/trees/astexplorer.html).
+Then paste the code into the [Scalameta AST Explorer](https://scalameta.org/docs/trees/astexplorer.html), to get an idea what the syntax tree looks like.
 Besides that, I found looking at the Scalameta [source for Tree nodes](https://github.com/scalameta/scalameta/blob/9df6bbfc4d9bd67ae6e0a51283dee3d5f944d7c5/scalameta/trees/shared/src/main/scala/scala/meta/Trees.scala) helpful to find out, what nodes I can match against.
 
 Other than that, I start by writing my matchers and placing plenty of `println`s inside, to orient myself (and see how wrong I got things).
@@ -359,7 +359,7 @@ So given `FailureHandler` (remember, no type parameters, no constructors), we wa
 Adding the type argument to `DecodeFailureHandler` is even easier: `Patch.addRight(traitName.get, "[Future]")`.
 
 How do we get to the `apply` method? See this `stats` field in the class definitions template above?
-These are the _statements_ that make up the body of the class[^3].
+These are the _statements_ that make up the body of the class.
 We need to match on those statements, to find the right method definition:
 
 ```scala
@@ -448,13 +448,13 @@ scalafix \
   ~/myproject/project/Dependencies.scala
 ```
 
-You may also want to use the `--scala-version` flag. I wrote and published my rules in/for Scala 2.13, even those operating on sbt files (remember, only the input/output needs to be compiled with that version).
+You may also want to use the `--scala-version` flag. I wrote and published my rules in Scala 2.13, which is the current default.
 
 One *important thing* to note is the double semicolon `::` in the artifact coordinates. This works similar to sbt's `%%` for cross-compiling. Many of the existing rules and examples use only one semicolon. Apparently, this is from an older version, which didn't support cross-publishing. You might have to add the version suffix ("_2.13") if you use that.
 
 ## Scala-Steward
 
-The star of the show! Let's put everything together to realize my dream of _auto-magic_ upgrades!
+The star of the show! Let's put everything together to realize my dream of _automagic_ upgrades!
 
 ### Try Before You Buy!
 
@@ -489,7 +489,7 @@ The folders `~/.sbt` and `~/.config/coursier` are mounted into the container, so
 The environment variable `COURSIER_REPOSITORIES` tells coursier which repositories to use to resolve artifacts.
 My `pass.sh` is a very janky construct, that just echos my personal [GitHub access token](https://github.com/settings/tokens).
 
-`repos.md` contains the repository configuration. It's a markdown list of the format `- org/repo[:branch]`.
+`repos.md` contains the repository configuration. It's a markdown list in the format `- org/repo[:branch]`.
 If you don't specify a branch, it will use main/master.
 
 `default.scala-steward.conf` the, well, default scala-steward config (can be overwritten with project specific configs).
@@ -568,7 +568,7 @@ There are a few limitations though:
 
 1. I didn't mention it so far, but you can't change configuration files this way.
 2. Migrations of build files don't work with private repos - you'll need to publish to maven central, or put the source on a public GitHub repo or web site.
-3. Migrations can fail if the code doesn't compile, or the semanticDB is stale.
+3. Migrations can fail if the code doesn't compile, or the semanticDB is stale (and the PR will be opened nonetheless [#3273](https://github.com/scala-steward-org/scala-steward/issues/3273)).
 
 I'm not quite sure I understand nr. 3 completely. After upgrading the dependency, the code doesn't compile anymore. Syntactic rules still work, bc. those are not parser errors, but type errors.
 It seems like semantic rules don't work on sources that don't compile (yet). Maybe bc. scala-steward checks the project out and doesn't have old semanticDBs lying around?
