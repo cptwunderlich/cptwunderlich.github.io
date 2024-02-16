@@ -1,6 +1,6 @@
 ---
 layout: post
-title: WIP\: scala migrations
+title: Automagic Scala Migrations
 tags:
   - scala
   - scalafix
@@ -603,3 +603,4 @@ My colleagues had to make due with a migration guide, containing lots of `sed` c
 
 [^1]: I won't forget, I won't forgive. /jk
 [^2]: Can't remember why I didn't just add the text right of the token, but I probably tried that. ¯\_(ツ)_/¯
+
