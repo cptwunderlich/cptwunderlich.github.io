@@ -1,12 +1,15 @@
 title: Ben's Blog
 author: Benjamin Maurer
-email: cptwunderlich@gmail.com
+email: maurer.benjamin@gmail.com
 lang: en
 description: This description is work in progress.
 
 # social media
 github_username: cptwunderlich
 twitter_username: cptwunderlich
+
+plugins:
+  - jekyll-feed
 
 # Build settings
 markdown: kramdown
