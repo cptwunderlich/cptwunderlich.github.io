@@ -21,6 +21,10 @@ That alone didn't really improve register allocation the way I hoped,
 but I'm working towards an SSA-based graph coloring register allocator.
 For that, I need liveness information _on SSA-form_.
 
+I did a lot of reading on liveness analysis and I would like to summarise this here,
+with a focus on practical matters and implementation.
+Hopefully I could gather some details that might not be found in textbooks.
+
 # What is 'Liveness' Anyway?
 
 A variable is said to be 'live' at a program point p, if its value will be needed at a later point in the program,
@@ -96,6 +100,11 @@ Many textbooks (and papers) talk about _live sets_ (or _liveness sets_).
 For a given basic block, Live<sub>In</sub> contains all the vregs that are live at the beginning
 of the block  ("available at the first instruction") and
 Live<sub>Out</sub> the ones that are live at the end of a block.
+The literature discusses using bit-vectors or sorted lists for these sets.
+Bit-vectors allow for efficient set union and other operations, but may waste a lot of space
+as they are _sparse_ - you need one bit per variable and most of these will be zero.
+Sorted lists are more dense, but insertion, union, etc. obiously is more costly.
+NCG uses IntSets, which are _big-endian patricia trees_ (and I wonder how that compares).
 
 You could simply use this, but, e.g., for register allocation, the "resolution" of this
 is too imprecise.
@@ -373,6 +382,34 @@ Quick explanation: An EBB is an extended basic block and an EBB parameter is a P
 
 # Algorithms
 
+After discussion _what_ we want to get, let's talk about _how_ to calculate it.
+
+Most lectures and textbooks focus on the [iterative data-flow analysis framework](https://en.wikipedia.org/wiki/Data-flow_analysis).
+You can also find lots of slides for university courses online, 
+[like this 1.864 page behemoth](http://www.complang.tuwien.ac.at/knoop/lehre/ws20/oc185A04/oc185A04_ws20_210112.pdf)
+from my alma mater (I sure hope they don't mind me deep-linking this here...).
+
+## Iterative data-flow analysis
+
+The TL;DR:
+You iterate over the CFG, propagating liveness information _backwards_ and you stop
+once liveness sets no longer change.
+In principal, iteration order can be arbitrary, but the algorithm will converge much
+faster with a proper iteration order.
+For a _backward analysis_ like liveness analysis, this would be a 
+[post-order traversal](https://eli.thegreenplace.net/2015/directed-graph-traversal-orderings-and-applications-to-data-flow-analysis).
+
+Other than iteration order, another way to speed-up the analysis is the use of a
+worklist, to only re-visit nodes that changed, i.e., you have to re-visit all predecessors
+in the CFG of a node whose Live<sub>In</sub> set has changed.
+Incremental analysis are also interesting in this regard, as you might want to re-analyse
+only parts that were changed by an optimization.
+"Modern compiler implementation in ML" by Appel discusses this in chapter 17.4.
+
+As for complexity, this algorithm's worst case complexity is in O(n<sup>4</sup>),
+but with a post-order traversal and under realistic circumstances, it is said to
+be between O(n) and (n<sup>2</sup>).
+
 Research report https://hal.inria.fr/inria-00558509v2/document
 
 #
@@ -453,6 +490,18 @@ Some weirdness regarding physical registers I observed in the old liveness analy
                 # r_dying: %r4 %r14
     {% endraw %}
 
+# Further Reading
+
+Cooper, Harvey and Kennedy, [Iterative Data-flow Analysis, Revisited](https://scholarship.rice.edu/handle/1911/96324),
+Rice University, Technical Report, 2004
+
+This TR is very interesting and looks at performance in practice.
+It looks more closely on the characteristics of different implementations of the worklist
+algorithm for data-flow analysis.
+
+Brandner et al, [Computing Liveness Sets for SSA-Form Programs](https://hal.inria.fr/inria-00558509v2),
+INRIA, Research Report, 2011
+
 
 [^1]: I've seen the terms "live range" and "live interval" used synonymously, but most papers and implementations
     seem to use the notion that "a live range consists of live intervals" and I'm also using it in that sense.
@@ -473,6 +522,6 @@ Some weirdness regarding physical registers I observed in the old liveness analy
 *[LR]: Live Range
 *[LRs]: Live Ranges
 *[NCG]: GHC's Native Code Generator
-*[SSA]: Static Single Assignment
+*[SSA]: Static Single Assignment (Form)
 *[vreg]: Virtual Register
 
