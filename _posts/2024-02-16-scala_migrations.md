@@ -9,9 +9,7 @@ tags:
   - programming
 ---
 
-# Automagic Scala Migrations
-
-## What & Why
+# What & Why
 
 We have an internal library and sbt plugin, which pins many library versions
 and provides some base functionality.
@@ -30,20 +28,20 @@ Anyway, I still believe that this is an awesome tool and the investment was wort
 
 This report is intended as a supplement to the tools' documentation and might help others in their journey to automatic scala migrations - and maybe a reader will have some suggestions for me.
 
-## The Project Setup
+# The Project Setup
 
-### The Tools
+## The Tools
 
 For our scala-steward Github action to run migrations, we first have to write them. The tool used to create and apply linters and migrations is scalafix. It is based on [scalameta](https://scalameta.org/), a library to represent and query scala programs as syntax trees, as well as storing semantic information, like types and symbols, in a database format (SemanticDB).
 
-### The Requirements
+## The Requirements
 
 I did not set out to write some generally applicable scalafix rules, which should be published for anyone to use.
 The migration should be very specific to our company's needs. Our artifacts are published to our own, private Sonatype Nexus Repository and our code is in our private GitHub Enterprise organization.
 
 So I have to work with these constraints. That means, that all the tools need to be able to resolve artifacts from the private repo and GitHub resources cannot be accessed without authentication.
 
-### Project structure
+## Project structure
 
 Scalafix allows you to use predefined rules (both internal and community release ones), but we don't care about this for now.
 
@@ -64,7 +62,7 @@ Also make sure to use the correct package name in the `resources/META-INF/servic
 
 The `input` directory holds your test files, which should be rewritten. After applying a rule from `rules`, the result should match the corresponding file in `output`. All of this is orchestrated by the test runner in `tests`.
 
-### Cross Compilation
+## Cross Compilation
 
 In our case, I wanted to rewrite the `Dependencies.scala` of our sbt build. One of the changes was renaming an artifact. Tapir upgraded from Play 2.8 straight to Play 3.0, which replaces Akka with Pekko, [in a bugfix release](https://github.com/softwaremill/tapir/releases/tag/v1.8.3)[^1]. So I needed to change that to the newly created [play29 modules](https://github.com/softwaremill/tapir/pull/3313) `tapir-play29-server`, etc.
 
@@ -156,7 +154,7 @@ lazy val `scalafix-tests` = (project in file("scalafix/tests"))
 This means that I have all the sources for the rules in the usual `src/main/scala` folder,
 but the input and output sources are separated in `src/main/scala-2.12` and `src/main/scala-2.13` respectively.
 
-## Writing Rules
+# Writing Rules
 
 This is the actual fun part!
 Two important concepts to understand, is the [Syntax Tree](https://scalameta.org/docs/trees/guide.html#what-is-a-syntax-tree) and Tokens.
@@ -165,7 +163,7 @@ Tokens are the building blocks of your program and represent keywords, identifie
 
 The [scalafix guide ](https://scalacenter.github.io/scalafix/docs/developers/setup.html) describes how to write rules and there are many existing rules you can learn from.
 
-### Syntactic vs. Semantic Rules
+## Syntactic vs. Semantic Rules
 
 First, we need to decide whether we want to write a _syntactic_ or _semantic_ rule.
 
@@ -181,7 +179,7 @@ semanticdbEnabled := true, // enable SemanticDB
 semanticdbVersion := scalafixSemanticdb.revision, // only required for Scala 2.x
 ```
 
-### What to Match
+## What to Match
 
 I'm typically starting out by building a minimal example of what I want to rewrite (as input)
 and what I would like it to look like afterwards (the output).
@@ -192,7 +190,7 @@ Besides that, I found looking at the Scalameta [source for Tree nodes](https://g
 
 Other than that, I start by writing my matchers and placing plenty of `println`s inside, to orient myself (and see how wrong I got things).
 
-## A Concrete Example
+# A Concrete Example
 
 Let's start with a syntactic rule.
 [Tapir's DecodeFailureHandler](https://github.com/softwaremill/tapir/releases/tag/v1.9.0#DecodeFailureHandler) has changed.
@@ -394,7 +392,7 @@ Since we only want to add the imports, if this file _actually contains_ a failur
 
 The complete rule can be found in this [gist](https://gist.github.com/cptwunderlich/8cbb9ae09b0d7cabdcd4a8b72183c363).
 
-## Semantic Rules
+# Semantic Rules
 
 Additionally to what you can do in a syntactic rule, you may also use [symbol matchers](https://scalacenter.github.io/scalafix/docs/developers/symbol-matcher.html) and so on.
 
@@ -413,11 +411,11 @@ You can use a symbol matcher in a pattern matching a tree node. For example, if 
 We place the matcher `contextMatcher(_)` where want to match a tree node in our match expression.
 The name in parenthesis is bound to the matched tree node.
 
-## Applying Rules
+# Applying Rules
 
 This is where things got complicated for me.
 
-### Private Repos
+## Private Repos
 
 As outlined in the beginning, we need to publish rules to a private repository.
 This simply uses our normal release process. It just pushes some jar files to Nexus.
@@ -433,7 +431,7 @@ Since I created these migrations for use with scala-steward, this is not necessa
 But it is useful for testing and applying rules manually.
 You can also add it to the current sbt session only, by typing `set ThisBuild / scalafixResolvers += coursierapi.MavenRepository.of("https://private.reposit.ory")` in the sbt console.
 
-### Sbt vs. scalafix-cli
+## Sbt vs. scalafix-cli
 
 When run from the sbt build, the scalafix rules can't rewrite the sbt build files themselves. Like that `Dependency.scala` file I wanted to rewrite, remember? At least, I haven't found a way to achieve this.
 
@@ -452,11 +450,11 @@ You may also want to use the `--scala-version` flag. I wrote and published my ru
 
 One *important thing* to note is the double semicolon `::` in the artifact coordinates. This works similar to sbt's `%%` for cross-compiling. Many of the existing rules and examples use only one semicolon. Apparently, this is from an older version, which didn't support cross-publishing. You might have to add the version suffix ("_2.13") if you use that.
 
-## Scala-Steward
+# Scala-Steward
 
 The star of the show! Let's put everything together to realize my dream of _automagic_ upgrades!
 
-### Try Before You Buy!
+## Try Before You Buy!
 
 The good thing about reading blog posts about things is, that you don't have to go through the mistakes the author has gone through in order to write this.
 
@@ -531,7 +529,7 @@ This brings me to my first big defeat: the "build" variant invokes scalafix-cli,
 For now, this just doesn't work and there is no way to run a shell script or similar. (But maybe we can make this work [#3276](https://github.com/scala-steward-org/scala-steward/issues/3276), [#3133](https://github.com/scala-steward-org/scala-steward/pull/3133)).
 I also tried using an artifact migration for this, but this seems to only be triggered if there is a new version for the artifact to be migrated. It didn't work either way.
 
-### Github Action
+## Github Action
 
 I added the `scalafix-migration.conf` to the root directory of our GitHub repo with the config for the [scala-steward GitHub action](https://github.com/scala-steward-org/scala-steward-action).
 
@@ -557,12 +555,12 @@ jobs:
           scalafix-migrations: 'scalafix-migrations.conf'
 ```
 
-## Conclusion
+# Conclusion
 
 So, did I achieve an automatic upgrade? Far from it.
 Scalafix and scala-steward are amazing tools and I'm happy I invested the time. I'm sure this will make future migrations easier.
 
-### Limitations
+## Limitations
 
 There are a few limitations though:
 
@@ -576,7 +574,7 @@ Speaking of which, some users report the error "stale semanticDB found". This mi
 
 In general have I seen issue when mixing multiple semantic rules. Sometimes it seems like the first rule works, but then the code doesn't compile properly so the second rule doesn't. This is just anecdotal, I have not investigated this. But the built-in `replace` rule seems never to work for me in combination with other rules. I just went back to using `sed` where possible.
 
-### Documentation
+## Documentation
 
 I think the docs can be improved. I had quite the hard start with scalafix. But it might be me.
 Now in hindsight, the docs make a lot of sense to me. But in the beginning, I didn't quite get it and more importantly, I couldn't find a lot of things.
@@ -592,7 +590,7 @@ I hope I can contribute this sometime soon.
 
 If you start out with scalafix (and scala-steward), don't make the same mistake I did - take more notes on which things caused you problems, or where the docs were not clear enough. That will help to improve them!
 
-### PEBKAC
+## PEBKAC
 
 Remember those double semicolons? They are important!
 After all the testing and releasing libraries and preparatory work, I messed up the scala-steward config in a flurry.
