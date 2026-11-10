@@ -29,3 +29,12 @@ layout: default
   {% include disqus.html %}
   {% endif %}
 </article>
+
+{% if jekyll.environment == 'production' %}
+<script data-goatcounter="https://cptwunderlich.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<noscript>
+    <img src="https://cptwunderlich.goatcounter.com/count?p={{ page.url }}">
+</noscript>
+{% endif %}
+
