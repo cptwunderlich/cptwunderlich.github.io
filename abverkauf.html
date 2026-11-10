@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Umzugsverkauf</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #23332f;
+      background: #f5f5f0;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 72px 0 96px; }
+    header { max-width: 650px; margin-bottom: 48px; }
+    h1 { margin: 0 0 16px; font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.05; font-weight: normal; }
+    header p { margin: 0; color: #5a6862; font-size: 1.125rem; line-height: 1.6; }
+    .items { border-top: 1px solid #cbd2c9; }
+    .item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; padding: 32px 0; border-bottom: 1px solid #cbd2c9; }
+    .gallery { position: relative; min-width: 0; }
+    .slide { display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: #e4e9e1; color: #728078; font: 0.875rem sans-serif; }
+    .slide[hidden] { display: none; }
+    .slide img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; }
+    .slide span { grid-area: 1 / 1; }
+    .slide img:not([hidden]) + span { display: none; }
+    .controls { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 4px; padding: 4px; background: #fff; border-radius: 4px; font: 0.75rem sans-serif; }
+    .controls[hidden] { display: none; }
+    .controls button { width: 36px; height: 36px; border: 0; background: transparent; color: #23332f; font-size: 1.25rem; cursor: pointer; }
+    .controls button:hover { background: #edf1ec; }
+    .controls button:focus-visible { outline: 2px solid #a35436; outline-offset: -2px; }
+    .counter { min-width: 42px; text-align: center; }
+    .details { padding: 8px 0; }
+    .item-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; }
+    h2 { margin: 0; font-size: 1.75rem; font-weight: normal; }
+    .price { margin: 0; color: #a35436; font: 600 1rem sans-serif; white-space: nowrap; }
+    .description { max-width: 36ch; margin: 22px 0 0; color: #5a6862; line-height: 1.65; }
+    @media (max-width: 600px) {
+      main { padding: 48px 0 64px; }
+      header { margin-bottom: 36px; }
+      .item { grid-template-columns: 1fr; gap: 18px; padding: 24px 0; }
+      .details { padding: 0; }
+      .description { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Umzugsverkauf</h1>
+      <p>Ich ziehe um und einige Dinge suchen ein neues Zuhause. Hier findest du eine Auswahl.</p>
+    </header>
+
+    <div class="items">
+      <article class="item">
+        <div class="gallery" aria-label="Bilder von Artikel 1">
+          <div class="slide"><img src="assets/abverkauf/artikel-1-1.jpg" alt="Artikel 1, Ansicht 1"><span>Foto folgt</span></div>
+          <div class="slide" hidden><img src="assets/abverkauf/artikel-1-2.jpg" alt="Artikel 1, Ansicht 2"><span>Foto folgt</span></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Artikel 1</h2><p class="price">&euro; 00</p></div>
+          <p class="description">Hier kannst du den Artikel beschreiben, zum Beispiel Zustand, Maße und weitere Details.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Bilder von Artikel 2">
+          <div class="slide"><img src="assets/abverkauf/artikel-2-1.jpg" alt="Artikel 2, Ansicht 1"><span>Foto folgt</span></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Artikel 2</h2><p class="price">Zu verschenken</p></div>
+          <p class="description">Hier kannst du den Artikel beschreiben, zum Beispiel Zustand, Maße und weitere Details.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+  <script>
+    document.querySelectorAll('.gallery').forEach(function (gallery) {
+      var slides = gallery.querySelectorAll('.slide');
+      var controls = gallery.querySelector('.controls');
+      var counter = gallery.querySelector('.counter');
+      var current = 0;
+
+      gallery.querySelectorAll('img').forEach(function (image) {
+        function updateImage() { image.hidden = !image.naturalWidth; }
+        image.addEventListener('load', updateImage);
+        image.addEventListener('error', updateImage);
+        if (image.complete) updateImage();
+      });
+
+      if (slides.length < 2) return;
+      controls.hidden = false;
+      function show(index) {
+        slides[current].hidden = true;
+        current = (index + slides.length) % slides.length;
+        slides[current].hidden = false;
+        counter.textContent = (current + 1) + ' / ' + slides.length;
+      }
+      controls.querySelector('.previous').addEventListener('click', function () { show(current - 1); });
+      controls.querySelector('.next').addEventListener('click', function () { show(current + 1); });
+      counter.textContent = '1 / ' + slides.length;
+    });
+  </script>
+</body>
+</html>
