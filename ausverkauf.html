@@ -26,7 +26,8 @@
     .slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
     .slide span { grid-area: 1 / 1; }
     .slide img:not([hidden]) + span { display: none; }
-    .controls { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 4px; padding: 4px; background: #fff; border-radius: 4px; font: 0.75rem sans-serif; }
+    .item.sold .gallery::after { position: absolute; inset: 0; z-index: 1; background: linear-gradient(45deg, transparent calc(50% - 5px), #c62828 calc(50% - 5px), #c62828 calc(50% + 5px), transparent calc(50% + 5px)), linear-gradient(-45deg, transparent calc(50% - 5px), #c62828 calc(50% - 5px), #c62828 calc(50% + 5px), transparent calc(50% + 5px)); content: ""; pointer-events: none; }
+    .controls { position: absolute; right: 12px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 4px; padding: 4px; background: #fff; border-radius: 4px; font: 0.75rem sans-serif; }
     .controls[hidden] { display: none; }
     .controls button { width: 36px; height: 36px; border: 0; background: transparent; color: #23332f; font-size: 1.25rem; cursor: pointer; }
     .controls button:hover { background: #edf1ec; }
@@ -35,6 +36,8 @@
     .details { padding: 8px 0; }
     .item-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; }
     h2 { margin: 0; font-size: 1.75rem; font-weight: normal; }
+    .sold-label { color: #c62828; font-weight: bold; }
+    .sold-title { text-decoration: line-through; }
     .price { margin: 0; color: #a35436; font: 600 1rem sans-serif; white-space: nowrap; }
     .description { max-width: 36ch; margin: 22px 0 0; color: #5a6862; line-height: 1.65; }
     @media (max-width: 600px) {
@@ -72,25 +75,6 @@
       </article>
 
       <article class="item">
-        <div class="gallery" aria-label="Esstisch, schwarz">
-          <div class="slide"><img src="assets/posts/sale/tisch1.jpg" alt="Schwarzer Tisch, Ansicht 1"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/tisch2.jpg" alt="Schwarzer Tisch, Ansicht 2"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/tisch3.jpg" alt="Schwarzer Tisch, Ansicht 3"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/tisch4.jpg" alt="Schwarzer Tisch, Ansicht 4"></div>
-          <div class="controls" hidden>
-            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
-            <span class="counter" aria-live="polite"></span>
-            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
-          </div>
-        </div>
-        <div class="details">
-          <div class="item-heading"><h2>Esstisch, schwarz / Dining table, black</h2><p class="price">&euro; 30</p></div>
-          <p class="description">Ikea Bjursta, ausziehbarer Esstisch in schwarz. Maße: 90x90x74cm Ausgezogen: 90x168cm.</p>
-          <p class="description">Ikea Bjursta, extensible dining table in black. Measures: 90x90x74cm Extended: 90x168cm.</p>
-        </div>
-      </article>
-
-      <article class="item">
         <div class="gallery" aria-label="Sessel, schwarz">
           <div class="slide"><img src="assets/posts/sale/sessel1.jpg" alt="Schwarzer Sessel, Ansicht 1"></div>
           <div class="slide" hidden><img src="assets/posts/sale/sessel2.jpg" alt="Schwarzer Sessel, Ansicht 2"></div>
@@ -106,24 +90,6 @@
           <div class="item-heading"><h2>Sessel, schwarz / Chairs, black</h2><p class="price">&euro; 40</p></div>
           <p class="description">Hochwertige Esstischsessel von WK Wohnen. 2 Stück.</p>
           <p class="description">High-quality dining chairs from WK Wohnen. 2 pieces.</p>
-        </div>
-      </article>
-
-      <article class="item">
-        <div class="gallery" aria-label="Regal, Metall / Shelf, metal">
-          <div class="slide"><img src="assets/posts/sale/regal1.webp" alt="Metall-Regal, Ansicht 1"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/regal2.webp" alt="Metall-Regal, Ansicht 2"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/regal3.webp" alt="Metall-Regal, Ansicht 3"></div>
-          <div class="controls" hidden>
-            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
-            <span class="counter" aria-live="polite"></span>
-            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
-          </div>
-        </div>
-        <div class="details">
-          <div class="item-heading"><h2>Stylisches Metall-Regal / Stylish Metal Shelf</h2><p class="price">&euro; 25</p></div>
-          <p class="description">Schönes Metall-Regal mit kupferfarbenem Schrauben. Maße: 140,5x60x30cm.</p>
-          <p class="description">Beautiful metal shelf with brass screws. Dimensions: 140.5x60x30cm.</p>
         </div>
       </article>
 
@@ -162,40 +128,6 @@
 
       <article class="item">
         <div class="gallery" aria-label="Lampe">
-          <div class="slide"><img src="assets/posts/sale/lampe3_1.jpg" alt="Deckenleuchte"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/lampe3_2.jpg" alt="Deckenleuchte, Ansicht 2"></div>
-          <div class="controls" hidden>
-            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
-            <span class="counter" aria-live="polite"></span>
-            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
-          </div>
-        </div>
-        <div class="details">
-          <div class="item-heading"><h2>Deckenleuchte / Ceiling Light</h2><p class="price">&euro; 5</p></div>
-          <p class="description">Runder Schirm aus Textil, beige/grau.</p>
-          <p class="description">Round shade made of textile, beige/gray.</p>
-        </div>
-      </article>
-
-      <article class="item">
-        <div class="gallery" aria-label="Lampe">
-          <div class="slide"><img src="assets/posts/sale/lampe4_1.jpg" alt="Deckenleuchte"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/lampe4_2.jpg" alt="Deckenleuchte, Ansicht 2"></div>
-          <div class="controls" hidden>
-            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
-            <span class="counter" aria-live="polite"></span>
-            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
-          </div>
-        </div>
-        <div class="details">
-          <div class="item-heading"><h2>Deckenleuchte / Ceiling Light</h2><p class="price">&euro; 5</p></div>
-          <p class="description">Lampe im industrial style. Metall.</p>
-          <p class="description">Industrial style lamp. Metal.</p>
-        </div>
-      </article>
-
-      <article class="item">
-        <div class="gallery" aria-label="Lampe">
           <div class="slide"><img src="assets/posts/sale/lampe5.jpg" alt="Spot-Lampe"></div>
           <div class="controls" hidden>
             <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
@@ -207,23 +139,6 @@
           <div class="item-heading"><h2>Spot-Lampe / Spot Lamp</h2><p class="price">&euro; 5</p></div>
           <p class="description">Spot-Lampe, metallisch.</p>
           <p class="description">Spot lamp, metallic.</p>
-        </div>
-      </article>
-
-      <article class="item">
-        <div class="gallery" aria-label="Kaffeepflanze">
-          <div class="slide"><img src="assets/posts/sale/kaffee1.jpg" alt="Kaffeepflanze, Ansicht 1"></div>
-          <div class="slide" hidden><img src="assets/posts/sale/kaffee2.jpg" alt="Kaffeepflanze, Ansicht 2"></div>
-          <div class="controls" hidden>
-            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
-            <span class="counter" aria-live="polite"></span>
-            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
-          </div>
-        </div>
-        <div class="details">
-          <div class="item-heading"><h2>Kaffeepflanze / Coffee Plant</h2><p class="price">gratis/free</p></div>
-          <p class="description">Kaffeepflanze (Coffea arabica).</p>
-          <p class="description">Coffee plant (Coffea arabica).</p>
         </div>
       </article>
 
@@ -240,6 +155,94 @@
           <div class="item-heading"><h2>Diverse Brettspiele / Various Board Games</h2><p class="price">gratis/free</p></div>
           <p class="description">Diverse Brettspiele.</p>
           <p class="description">Various board games.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Esstisch, schwarz">
+          <div class="slide"><img src="assets/posts/sale/tisch1.jpg" alt="Schwarzer Tisch, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch2.jpg" alt="Schwarzer Tisch, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch3.jpg" alt="Schwarzer Tisch, Ansicht 3"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch4.jpg" alt="Schwarzer Tisch, Ansicht 4"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Esstisch, schwarz / Dining table, black</span></h2><p class="price">&euro; 30</p></div>
+          <p class="description">Ikea Bjursta, ausziehbarer Esstisch in schwarz. Maße: 90x90x74cm Ausgezogen: 90x168cm.</p>
+          <p class="description">Ikea Bjursta, extensible dining table in black. Measures: 90x90x74cm Extended: 90x168cm.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Kaffeepflanze">
+          <div class="slide"><img src="assets/posts/sale/kaffee1.jpg" alt="Kaffeepflanze, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/kaffee2.jpg" alt="Kaffeepflanze, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Kaffeepflanze / Coffee Plant</span></h2><p class="price">gratis/free</p></div>
+          <p class="description">Kaffeepflanze (Coffea arabica).</p>
+          <p class="description">Coffee plant (Coffea arabica).</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe4_1.jpg" alt="Deckenleuchte"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/lampe4_2.jpg" alt="Deckenleuchte, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Deckenleuchte / Ceiling Light</span></h2><p class="price">&euro; 5</p></div>
+          <p class="description">Lampe im industrial style. Metall.</p>
+          <p class="description">Industrial style lamp. Metal.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe3_1.jpg" alt="Deckenleuchte"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/lampe3_2.jpg" alt="Deckenleuchte, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Deckenleuchte / Ceiling Light</span></h2><p class="price">&euro; 5</p></div>
+          <p class="description">Runder Schirm aus Textil, beige/grau.</p>
+          <p class="description">Round shade made of textile, beige/gray.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Regal, Metall / Shelf, metal">
+          <div class="slide"><img src="assets/posts/sale/regal1.webp" alt="Metall-Regal, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/regal2.webp" alt="Metall-Regal, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/regal3.webp" alt="Metall-Regal, Ansicht 3"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Stylisches Metall-Regal / Stylish Metal Shelf</span></h2><p class="price">&euro; 25</p></div>
+          <p class="description">Schönes Metall-Regal mit kupferfarbenem Schrauben. Maße: 140,5x60x30cm.</p>
+          <p class="description">Beautiful metal shelf with brass screws. Dimensions: 140.5x60x30cm.</p>
         </div>
       </article>
     </div>
