@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Umzugsverkauf / Moving Sale</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #23332f;
+      background: #f5f5f0;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 72px 0 96px; }
+    header { max-width: 650px; margin-bottom: 48px; }
+    h1 { margin: 0 0 16px; font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.05; font-weight: normal; }
+    header p { margin: 0; color: #5a6862; font-size: 1.125rem; line-height: 1.6; }
+    .items { border-top: 1px solid #cbd2c9; }
+    .item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; padding: 32px 0; border-bottom: 1px solid #cbd2c9; }
+    .gallery { position: relative; min-width: 0; }
+    .slide { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: #e4e9e1; color: #728078; font: 0.875rem sans-serif; }
+    .slide[hidden] { display: none; }
+    .slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    .slide span { grid-area: 1 / 1; }
+    .slide img:not([hidden]) + span { display: none; }
+    .item.sold .gallery::after { position: absolute; inset: 0; z-index: 1; background: linear-gradient(45deg, transparent calc(50% - 5px), #c62828 calc(50% - 5px), #c62828 calc(50% + 5px), transparent calc(50% + 5px)), linear-gradient(-45deg, transparent calc(50% - 5px), #c62828 calc(50% - 5px), #c62828 calc(50% + 5px), transparent calc(50% + 5px)); content: ""; pointer-events: none; }
+    .controls { position: absolute; right: 12px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 4px; padding: 4px; background: #fff; border-radius: 4px; font: 0.75rem sans-serif; }
+    .controls[hidden] { display: none; }
+    .controls button { width: 36px; height: 36px; border: 0; background: transparent; color: #23332f; font-size: 1.25rem; cursor: pointer; }
+    .controls button:hover { background: #edf1ec; }
+    .controls button:focus-visible { outline: 2px solid #a35436; outline-offset: -2px; }
+    .counter { min-width: 42px; text-align: center; }
+    .details { padding: 8px 0; }
+    .item-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; }
+    h2 { margin: 0; font-size: 1.75rem; font-weight: normal; }
+    .sold-label { color: #c62828; font-weight: bold; }
+    .sold-title { text-decoration: line-through; }
+    .price { margin: 0; color: #a35436; font: 600 1rem sans-serif; white-space: nowrap; }
+    .description { max-width: 36ch; margin: 22px 0 0; color: #5a6862; line-height: 1.65; }
+    @media (max-width: 600px) {
+      main { padding: 48px 0 64px; }
+      header { margin-bottom: 36px; }
+      .item { grid-template-columns: 1fr; gap: 18px; padding: 24px 0; }
+      .details { padding: 0; }
+      .description { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Umzugsverkauf / Moving Sale</h1>
+      <p>Wir ziehen um und einige Dinge suchen ein neues Zuhause. Hier findest du eine Auswahl. Alle Preise verhandelbar.</p>
+      <p>We are moving and a few things are looking for a new home. Here you'll find a selection. All prices are negotiable.</p>
+    </header>
+
+    <div class="items">
+
+      <article class="item">
+        <div class="gallery" aria-label="Schreibtisch">
+          <div class="slide"><img src="assets/posts/sale/schreibtisch1.webp" alt="Schreibtisch, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/schreibtisch2.webp" alt="Schreibtisch, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/schreibtisch3.webp" alt="Schreibtisch, Ansicht 3"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/schreibtisch4.webp" alt="Schreibtisch, Ansicht 4"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Höhenverstellbarer Schreibtisch / Height-Adjustable Desk</h2><p class="price">&euro; 200</p></div>
+          <p class="description">Ikea Bekannt. Elektrisch Höhenverstellbar. Im sitzen und stehen verwendbar. Ca. 2 Jahre alt, super Zustand. 120x80cm</p>
+          <p class="description">Ikea Bekannt. Electric height-adjustable. Usable while sitting and standing. Approximately 2 years old, excellent condition. 120x80cm</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Badregal">
+          <div class="slide"><img src="assets/posts/sale/badregal1.webp" alt="Badregal, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/badregal2.webp" alt="Badregal, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Badregal / Bathroom Shelf</h2><p class="price">&euro; 40</p></div>
+          <p class="description">Ikea Hemnes Regal. Weiß, sehr guter Zustand. Solide. Maße: 171x39x35,5 cm</p>
+          <p class="description">Ikea Hemnes shelf. White, excellent condition. Solid. Dimensions: 171x39x35.5 cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="CD-Regal">
+          <div class="slide"><img src="assets/posts/sale/cdregal.webp" alt="CD-Regal"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>CD/DVD-Regal / CD/DVD Shelf</h2><p class="price">&euro; 5</p></div>
+          <p class="description">Schwarzes CD/DVD Regal. Maße 202x20x17cm (h,b,t)</p>
+          <p class="description">Ikea CD/DVD shelf, black. Dimensions: 202x20x17 cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Rollregal">
+          <div class="slide"><img src="assets/posts/sale/rollregal1.webp" alt="Rollregal, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/rollregal2.webp" alt="Rollregal, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/rollregal3.webp" alt="Rollregal, Ansicht 3"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Rollregal / Rolling Shelf</h2><p class="price">&euro; 10</p></div>
+          <p class="description">Weißes Metall-Gitter-Rollregal mit 3 Laden. Ersatzräder dabei. Maße: 41x76,5x55 cm (b,h,t)</p>
+          <p class="description">Ikea Rolling shelf, metal mesh, with 3 drawers, white. Dimensions: 41x76.5x55 cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Schreibtischstuhl">
+          <div class="slide"><img src="assets/posts/sale/schreibtischsessel1.webp" alt="Schreibtischstuhl, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/schreibtischsessel2.webp" alt="Schreibtischstuhl, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/schreibtischsessel3.webp" alt="Schreibtischstuhl, Ansicht 3"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Schreibtischstuhl / Desk Chair</h2><p class="price">&euro; 40</p></div>
+          <p class="description">Ikea Flintan Schreibtischsessel, schwarz. Ca. 2 Jahre alt in sehr gutem Zustand.</p>
+          <p class="description">Ikea Flintan desk chair, black. Approximately 2 years old, in excellent condition.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Sporttasche">
+          <div class="slide"><img src="assets/posts/sale/sporttasche1.webp" alt="Sporttasche, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/sporttasche3.webp" alt="Sporttasche, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/sporttasche4.webp" alt="Sporttasche, Ansicht 3"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Sporttasche / Sports Bag</h2><p class="price">&euro; 5</p></div>
+          <p class="description">Under Armour Sporttasche, schwarz. Ca. 52x28cm.</p>
+          <p class="description">Under Armour sports bag, black. Approximately 52x28cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Waschbeckenunterschrank">
+          <div class="slide"><img src="assets/posts/sale/waschbeckenunterschrank1.webp" alt="Waschbeckenunterschrank, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/waschbeckenunterschrank2.webp" alt="Waschbeckenunterschrank, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/waschbeckenunterschrank3.webp" alt="Waschbeckenunterschrank, Ansicht 3"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/waschbeckenunterschrank4.webp" alt="Waschbeckenunterschrank, Ansicht 4"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/waschbeckenunterschrank5.webp" alt="Waschbeckenunterschrank, Ansicht 5"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Waschbeckenunterschrank / Bathroom Sink Cabinet</h2><p class="price">&euro; 10</p></div>
+          <p class="description">Von Schildmeyer Modell "Bello". Untere Lade hat innen Abnutzungsspuren, außen einen Spritzer Haarfärbemittel. Maße: 67x56,5x33cm</p>
+          <p class="description">Cabinet by Schildmeyer model "Bello". The lower drawer has internal wear marks, and the outside has a hair dye stain. Dimensions: 67x56.5x33 cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="kallax regal">
+          <div class="slide"><img src="assets/posts/sale/kallax.jpg" alt="Kallax Regal, weiß"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Kallax Regal / Kallax Shelf</h2><p class="price">&euro; 20</p></div>
+          <p class="description">Weißes Kallax-Regal von IKEA, 3x4 Fächer. Flaschenfach-Einsatz herausnehmbar. Maße:  112x147 cm</p>
+          <p class="description">White Kallax shelf from IKEA, 3x4 compartments. Bottle compartment insert removable. Dimensions: 112x147 cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Sessel, schwarz">
+          <div class="slide"><img src="assets/posts/sale/sessel1.webp" alt="Schwarzer Sessel, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/sessel2.webp" alt="Schwarzer Sessel, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/sessel3.webp" alt="Schwarzer Sessel, Ansicht 3"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/sessel4.webp" alt="Schwarzer Sessel, Ansicht 4"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Sessel, schwarz / Chairs, black</h2><p class="price">&euro; 40</p></div>
+          <p class="description">Hochwertige Esstischsessel von WK Wohnen. 2 Stück.</p>
+          <p class="description">High-quality dining chairs from WK Wohnen. 2 pieces.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe1_1.webp" alt="Deckenleuchte"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/lampe1_2.webp" alt="Lampe, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Deckenleuchte / Ceiling Light</h2><p class="price">&euro; 5</p></div>
+          <p class="description">Bauchige Deckenleuchte, außen schwarz, innen goldfarben. Durchmesser ca. ~40cm, Höhe ca. ~44cm.</p>
+          <p class="description">Bulbous ceiling light with a black exterior and golden interior. Diameter approximately 40cm, height approximately 44cm.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe2.webp" alt="Deckenleuchte"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Deckenleuchte / Ceiling Light</h2><p class="price">&euro; 5</p></div>
+          <p class="description">Geometrisches Gitter, schwarz.</p>
+          <p class="description">Geometric mesh, black.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe5.webp" alt="Spot-Lampe"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Spot-Lampe / Spot Lamp</h2><p class="price">&euro; 5</p></div>
+          <p class="description">Spot-Lampe, metallisch.</p>
+          <p class="description">Spot lamp, metallic.</p>
+        </div>
+      </article>
+
+      <article class="item">
+        <div class="gallery" aria-label="Brettspiele">
+          <div class="slide"><img src="assets/posts/sale/spiele.webp" alt="Diverse Brettspiele"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2>Diverse Brettspiele / Various Board Games</h2><p class="price">gratis/free</p></div>
+          <p class="description">Diverse Brettspiele.</p>
+          <p class="description">Various board games.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Esstisch, schwarz">
+          <div class="slide"><img src="assets/posts/sale/tisch1.webp" alt="Schwarzer Tisch, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch2.webp" alt="Schwarzer Tisch, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch3.webp" alt="Schwarzer Tisch, Ansicht 3"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/tisch4.webp" alt="Schwarzer Tisch, Ansicht 4"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Esstisch, schwarz / Dining table, black</span></h2><p class="price">&euro; 30</p></div>
+          <p class="description">Ikea Bjursta, ausziehbarer Esstisch in schwarz. Maße: 90x90x74cm Ausgezogen: 90x168cm.</p>
+          <p class="description">Ikea Bjursta, extensible dining table in black. Measures: 90x90x74cm Extended: 90x168cm.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Kaffeepflanze">
+          <div class="slide"><img src="assets/posts/sale/kaffee1.webp" alt="Kaffeepflanze, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/kaffee2.webp" alt="Kaffeepflanze, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Kaffeepflanze / Coffee Plant</span></h2><p class="price">gratis/free</p></div>
+          <p class="description">Kaffeepflanze (Coffea arabica).</p>
+          <p class="description">Coffee plant (Coffea arabica).</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe4_1.webp" alt="Deckenleuchte"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/lampe4_2.webp" alt="Deckenleuchte, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Deckenleuchte / Ceiling Light</span></h2><p class="price">&euro; 5</p></div>
+          <p class="description">Lampe im industrial style. Metall.</p>
+          <p class="description">Industrial style lamp. Metal.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Lampe">
+          <div class="slide"><img src="assets/posts/sale/lampe3_1.webp" alt="Deckenleuchte"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/lampe3_2.webp" alt="Deckenleuchte, Ansicht 2"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Deckenleuchte / Ceiling Light</span></h2><p class="price">&euro; 5</p></div>
+          <p class="description">Runder Schirm aus Textil, beige/grau.</p>
+          <p class="description">Round shade made of textile, beige/gray.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Regal, Metall / Shelf, metal">
+          <div class="slide"><img src="assets/posts/sale/regal1.webp" alt="Metall-Regal, Ansicht 1"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/regal2.webp" alt="Metall-Regal, Ansicht 2"></div>
+          <div class="slide" hidden><img src="assets/posts/sale/regal3.webp" alt="Metall-Regal, Ansicht 3"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Stylisches Metall-Regal / Stylish Metal Shelf</span></h2><p class="price">&euro; 25</p></div>
+          <p class="description">Schönes Metall-Regal mit kupferfarbenem Schrauben. Maße: 140,5x60x30cm.</p>
+          <p class="description">Beautiful metal shelf with brass screws. Dimensions: 140.5x60x30cm.</p>
+        </div>
+      </article>
+
+      <article class="item sold">
+        <div class="gallery" aria-label="Bett Ikea Brimnes">
+          <div class="slide"><img src="assets/posts/sale/brimnes-symbolfoto.jpg" alt="Brimnes Symbolfoto"></div>
+          <div class="controls" hidden>
+            <button type="button" class="previous" aria-label="Vorheriges Bild" title="Vorheriges Bild">&#8592;</button>
+            <span class="counter" aria-live="polite"></span>
+            <button type="button" class="next" aria-label="Nächstes Bild" title="Nächstes Bild">&#8594;</button>
+          </div>
+        </div>
+        <div class="details">
+          <div class="item-heading"><h2><span class="sold-label">SOLD</span> <span class="sold-title">Ikea Brimnes Bett</span></h2><p class="price">&euro; 30</p></div>
+          <p class="description">Ikea Brimnes Bett, Breite 140cm, in weiß. Inklusive Lattenrost und Matratze.</p>
+          <p class="description">Ikea Brimnes bed, width 140cm, in white. Includes slatted frame and mattress.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+  <script>
+    document.querySelectorAll('.gallery').forEach(function (gallery) {
+      var slides = gallery.querySelectorAll('.slide');
+      var controls = gallery.querySelector('.controls');
+      var counter = gallery.querySelector('.counter');
+      var current = 0;
+
+      gallery.querySelectorAll('img').forEach(function (image) {
+        function updateImage() { image.hidden = !image.naturalWidth; }
+        image.addEventListener('load', updateImage);
+        image.addEventListener('error', updateImage);
+        if (image.complete) updateImage();
+      });
+
+      if (slides.length < 2) return;
+      controls.hidden = false;
+      function show(index) {
+        slides[current].hidden = true;
+        current = (index + slides.length) % slides.length;
+        slides[current].hidden = false;
+        counter.textContent = (current + 1) + ' / ' + slides.length;
+      }
+      controls.querySelector('.previous').addEventListener('click', function () { show(current - 1); });
+      controls.querySelector('.next').addEventListener('click', function () { show(current + 1); });
+      counter.textContent = '1 / ' + slides.length;
+    });
+  </script>
+</body>
+</html>
